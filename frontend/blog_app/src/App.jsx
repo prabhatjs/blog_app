@@ -1,5 +1,5 @@
 import { useState } from 'react'
-
+import toast, { Toaster } from 'react-hot-toast';
 function App() {
   const [userdata, setuserdata] = useState({name:"",email:"",password:""});
 
