@@ -7,10 +7,14 @@ const userSchema=new mongoose.Schema({
        type:String,
         required:true,
         unique:true,
-    }
+    },
+    blogs:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Blog" 
+    }]
 });
 
 //create model for this schema
 const User=mongoose.model("User",userSchema);
-
+ 
 module.exports=User;
