@@ -1,47 +1,52 @@
 const User=require('../models/User');
-
+const bcrypt=require('bcrypt');
 async function createuser (req,res)
-{
-    const {name,password,email} = req.body;
-    console.log(req.body);
-    try {
-        //check email password and email 
-        if(!name){
-            return res.status(400).json({
-                success:false,
-                message:'Please enter the name'
-            })
-        }if(!password){
-            return res.status(400).json({
-                success:false,
-                message:'Please enter the password'
-            });
-        }if(!email){
-            return res.status(400).json({
-                success:false,
-                message:'Please enter the Email'
-            });
-        }
-        //check for email in db or not
-        const emailAlreadyexist=await User.findOne({email})
-        if(emailAlreadyexist){
-            return res.status(400).json({
+    {
+  
+        const {name,password,email} = req.body;
+        console.log(req.body);
+        try {
+            //check email password and email 
+            if(!name){
+                return res.status(400).json({
+                    success:false,
+                    message:'Please enter the name'
+                })
+            }if(!password){
+                return res.status(400).json({
+                    success:false,
+                    message:'Please enter the password'
+                });
+            }if(!email){
+                return res.status(400).json({
+                    success:false,
+                    message:'Please enter the Email'
+                });
+            }
+
+            //check for email in db or not
+            const emailAlreadyexist=await User.findOne({email})
+            if(emailAlreadyexist){
+              return res.status(400).json({
                 success:false,
                 message:'user already exist with this email ',
             })
         }
-        const newUser=await User.create({
-            name,
-            email,
-            password
-        });
+            let salt=await bcrypt.genSalt(10);
+            const hashedpassword=await bcrypt.hash(password,salt);
+    
+            const newUser=await User.create({
+                name,
+                email,
+                password:hashedpassword
+            });
         //create user and send back response
-        return res.status(200).json({
-            success:true,
-            message:"User Created successfully",
-            newUser
-        })
-    } catch (error) {
+            return res.status(200).json({
+                success:true,
+                message:"User Created successfully",
+                newUser
+            })
+        } catch (error) {
         return res.status(500).json({
             success:false,
             message:'Please Try Again',
@@ -50,6 +55,55 @@ async function createuser (req,res)
     }
 }
 
+async function login(req,res){
+    const {password,email}=req.body;
+    try {
+        if(!email){
+            return res.status(400).json({
+                success:false,
+                message:"Please eneter the email"
+            })
+        }
+        if(!password){
+            return res.status(400).json({
+                success:false,
+                message:"Please enter the Password"
+            })
+        }
+        const checkUserExist=await User.findOne({email});
+        if(!checkUserExist){//user is not found
+            return res.status(400).json({
+                success:false,
+                message:"User is not registerd "
+            })
+        }
+        // if(!(checkUserExist.password==password)){
+        //     return res.status(400).json({
+        //         success:false,
+        //         message:"Password is wrong"
+        //     })
+        // }
+        let checkpassword=await bcrypt.compare(password,checkUserExist.password)
+        console.log(checkpassword);
+        if(checkpassword){
+        return res.status(200).json({
+            success:true,
+            message:"User Login",
+            checkUserExist
+        })}
+        else{
+            return res.status(400).json({
+                success:true,
+                message:"Password is incorrect",
+            })
+        }
+    } catch (error) {
+        return res.status(500).json({
+            success:false,
+            message:"Please Try again",
+            error:error.message
+        });
+    }}
 async function getallusers(req,res){
     try {//find all user find method use 
         const users=await User.find({});
@@ -151,4 +205,4 @@ async function deleteuser (req,res){
     }
 }
 
-module.exports={createuser,getallusers,getuserbyId,updateuser,deleteuser} 
+module.exports={createuser,getallusers,getuserbyId,updateuser,deleteuser,login} 
