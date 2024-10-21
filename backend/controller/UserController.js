@@ -1,8 +1,11 @@
 const User=require('../models/User');
 const bcrypt=require('bcrypt');
+const {generateJWT}=require('../Utils/genrateJwtToken');
+
+
+//create User----------------------------
 async function createuser (req,res)
     {
-  
         const {name,password,email} = req.body;
         console.log(req.body);
         try {
@@ -23,7 +26,6 @@ async function createuser (req,res)
                     message:'Please enter the Email'
                 });
             }
-
             //check for email in db or not
             const emailAlreadyexist=await User.findOne({email})
             if(emailAlreadyexist){
@@ -40,11 +42,18 @@ async function createuser (req,res)
                 email,
                 password:hashedpassword
             });
-        //create user and send back response
+            //token generateJWT -------------------------------------------------------------------
+           let token= await generateJWT({email:newUser.email,id:newUser._id});
+
+        //create user and send back response,and hide password
             return res.status(200).json({
                 success:true,
                 message:"User Created successfully",
-                newUser
+                Users:{
+                    name:newUser.name,
+                     email:newUser.email,
+                },
+                token
             })
         } catch (error) {
         return res.status(500).json({
@@ -55,6 +64,7 @@ async function createuser (req,res)
     }
 }
 
+//login user-----------------------------
 async function login(req,res){
     const {password,email}=req.body;
     try {
@@ -104,6 +114,8 @@ async function login(req,res){
             error:error.message
         });
     }}
+
+//get All users--------------------------    
 async function getallusers(req,res){
     try {//find all user find method use 
         const users=await User.find({});
@@ -129,6 +141,7 @@ async function getallusers(req,res){
     }
 }
 
+//get User By ID--------------------------
 async function getuserbyId(req,res){
     try {
      const id = req.params.id;
@@ -153,6 +166,7 @@ async function getuserbyId(req,res){
     }
  }
 
+ //Update user----------------------------
  async function updateuser(req,res){
     try {
         const id=req.params.id
@@ -179,6 +193,7 @@ async function getuserbyId(req,res){
     }
 }
 
+//delete User-----------------------------
 async function deleteuser (req,res){
     try {
         const id=req.params.id
@@ -206,3 +221,13 @@ async function deleteuser (req,res){
 }
 
 module.exports={createuser,getallusers,getuserbyId,updateuser,deleteuser,login} 
+
+/**
+ * jwt-json web token
+ * ---------------------
+ * user1 user2 
+ * we have blogs-1,2,3,4
+ * i am user 1-
+ * 
+ * 
+ */
