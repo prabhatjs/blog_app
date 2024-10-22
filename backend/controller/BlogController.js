@@ -4,8 +4,11 @@ const User=require('../models/User');
 
 
 async function createBlog(req,res){
+    //modify request----
+    const creator=req.user;
     //creator is id of user which user created blog 
-    const {title,description,draft,creator}=req.body;
+    const {title,description,draft}=req.body;
+    console.log(req.body);
     try 
     {
         if(!title||!description){
@@ -26,11 +29,10 @@ async function createBlog(req,res){
             title,
             description,
             draft,
-            creator
+            creator,
         })
         //update user model blog id push in user model blog array...
         await User.findByIdAndUpdate(creator,{$push : {blogs:blog._id}})
-        
         return res.status(200).json({
             message:"Blog Created Successfully",
             success:true,
@@ -43,7 +45,6 @@ async function createBlog(req,res){
             error:error.message
         })
     }
-
 }
 async function getBlogs(req,res){
 try {

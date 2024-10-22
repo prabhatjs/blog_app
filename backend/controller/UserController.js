@@ -42,6 +42,7 @@ async function createuser (req,res)
                 email,
                 password:hashedpassword
             });
+            console.log(newUser);
             //token generateJWT -------------------------------------------------------------------
            let token= await generateJWT({email:newUser.email,id:newUser._id});
 
@@ -52,8 +53,9 @@ async function createuser (req,res)
                 Users:{
                     name:newUser.name,
                      email:newUser.email,
+                     token
                 },
-                token
+                
             })
         } catch (error) {
         return res.status(500).json({

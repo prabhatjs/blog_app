@@ -11,6 +11,7 @@ app. use --> It is generally used for introducing middlewares in your applicatio
 and express.json() is a built-in middleware function in Express.js that parses 
 incoming requests with JSON payloads and is based on the body-parser middleware.
 */
+
 app.use(express.json());
 app.use("/api/v1",userRoutes);
 app.use("/api/v1",Blogroute);
