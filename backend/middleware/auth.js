@@ -1,5 +1,4 @@
 const { verifyJwt } = require("../Utils/genrateJwtToken");
-
 const verifyUser=async (req,res,next)=>{
     let token=req.headers.authorization.split(" ")[1];
     console.log("user middleware");

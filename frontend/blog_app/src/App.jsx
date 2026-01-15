@@ -12,7 +12,7 @@ function App() {
     <Route path='/' element={<Blogs/>}></Route>
     <Route path='/signup' element={<Signup/>}></Route>
     <Route path='/signin' element={<Signin/>}></Route>
-    <Route path='/blogs'></Route>
+    <Route path='/blogs' element={<Blogs/>}></Route>
     <Route path='/create-blog' element={<CreateBlog/>}></Route>
     {/* Handle all unknow routes */}
     <Route path='*' element={<h1>This path is Invalid</h1>}></Route>
